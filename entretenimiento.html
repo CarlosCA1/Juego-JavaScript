@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entretenimiento</title>
+  <style>
+    /* Box-sizing global para mejor control de los elementos */
+    * {
+      box-sizing: border-box;
+    }
+
+    /* Estilo general del body */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+        url('Images/imagenEntretenimiento.jpeg') center/cover no-repeat fixed;
+    }
+
+    /* Contenedor principal del quiz */
+    .quiz-container {
+      background-color: rgba(255, 255, 255);
+      border-radius: 16px;
+      padding: 40px 30px;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Título principal */
+    h1 {
+      margin-bottom: 30px;
+      color: black;
+      font-size: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: black;
+    }
+
+    #answers {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* Estilo para botones */
+    button {
+      padding: 12px 18px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      transform: scale(1.02);
+    }
+
+    /* Botón para pasar a la siguiente pregunta */
+    #next-btn {
+      background-color: blue;
+      color: white;
+      margin-top: 20px;
+    }
+
+    #next-btn:hover {
+      background-color: #357ab8;
+    }
+
+    /* Estilos para respuestas correctas o incorrectas */
+    .correct {
+      background-color: green;
+      color: white;
+    }
+
+    .wrong {
+      background-color: red;
+      color: white;
+    }
+
+    /* Estilo de la puntuación final */
+    #score {
+      font-weight: bold;
+      font-size: 18px;
+      color: black;
+      margin-top: 25px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Contenedor del quiz -->
+  <div class="quiz-container">
+    <h1>Entretenimiento</h1>
+    <div id="question-container">
+      <p id="question"></p> <!-- Pregunta -->
+      <div id="answers"></div> <!-- Contenedor de respuestas -->
+      <button id="next-btn" style="display:none;">Siguiente</button>
+    </div>
+    <p id="score"></p> <!-- Texto de puntuación final -->
+
+    <!-- Música de fondo -->
+    <audio autoplay loop hidden>
+      <source src="Sounds/musicaFondo.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Sonidos de acierto o fallo -->
+    <audio id="correct-sound" src="sounds/correcto.mp3"></audio>
+    <audio id="wrong-sound" src="sounds/incorrecto.mp3"></audio>
+  </div>
+
+  <script>
+    // Lista de preguntas, cada una con su texto, opciones y respuesta correcta (índice)
+    const questions = [
+      { question: "¿Qué actor interpretó a Iron Man en el Universo Cinematográfico de Marvel?", answers: ["Chris Evans", "Robert Downey Jr.", "Chris Hemsworth", "Mark Ruffalo"], correct: 1 },
+      { question: "¿Qué saga cinematográfica tiene personajes como Frodo, Gandalf y Legolas?", answers: ["Harry Potter", "El Señor de los Anillos", "Star Wars", "Crónicas de Narnia"], correct: 1 },
+      { question: "¿Cuál es el nombre de la escuela en 'Harry Potter'?", answers: ["Durmstrang", "Hogwarts", "Ilvermorny", "Beauxbatons"], correct: 1 },
+      { question: "¿Quién es el creador de los personajes de Marvel como Spider-Man y Hulk?", answers: ["Stan Lee", "Jack Kirby", "Bob Kane", "Alan Moore"], correct: 0 },
+      { question: "¿Qué película ganó el Óscar a Mejor Película en 2020?", answers: ["Joker", "1917", "Parásitos", "Érase una vez en Hollywood"], correct: 2 },
+      { question: "¿Qué serie es conocida por la frase 'Winter is Coming'?", answers: ["The Witcher", "Breaking Bad", "Game of Thrones", "Vikingos"], correct: 2 },
+      { question: "¿Cuál es el nombre real de Lady Gaga?", answers: ["Stefani Germanotta", "Ariana Grande", "Katy Hudson", "Taylor Swift"], correct: 0 },
+      { question: "¿Qué videojuego tiene personajes como Mario, Luigi y Bowser?", answers: ["Sonic", "Zelda", "Pokémon", "Super Mario Bros"], correct: 3 },
+      { question: "¿En qué año se lanzó la primera película de Star Wars?", answers: ["1980", "1977", "1983", "1975"], correct: 1 },
+      { question: "¿Qué artista es conocido por la canción 'Blinding Lights'?", answers: ["The Weeknd", "Drake", "Ed Sheeran", "Post Malone"], correct: 0 },
+      { question: "¿En qué año se estrenó la primera película de 'Jurassic Park'?", answers: ["1993", "1995", "1989", "1991"], correct: 0 },
+      { question: "¿Quién interpretó al personaje de Jack Dawson en la película 'Titanic'?", answers: ["Matt Damon", "Leonardo DiCaprio", "Johnny Depp", "Brad Pitt"], correct: 1 },
+      { question: "¿En qué película de Disney aparece el personaje de Elsa?", answers: ["Moana", "Frozen", "La Bella y la Bestia", "Cenicienta"], correct: 1 },
+      { question: "¿Cuál fue el primer nombre de la banda conocida como The Beatles?", answers: ["The Quarrymen", "The Rolling Stones", "The Fab Four", "The Silver Beatles"], correct: 0 },
+      { question: "¿Qué actor fue el protagonista de la serie de televisión 'Friends'?", answers: ["Matthew Perry", "David Schwimmer", "Matt LeBlanc", "Jennifer Aniston"], correct: 1 },
+      { question: "¿En qué año se estrenó el primer episodio de 'The Simpsons'?", answers: ["1989", "1990", "1988", "1992"], correct: 0 },
+      { question: "¿Qué cantante es conocida como la 'Reina del Pop'?", answers: ["Madonna", "Beyoncé", "Lady Gaga", "Kylie Minogue"], correct: 0 },
+      { question: "¿En qué película aparece el famoso personaje de Darth Vader?", answers: ["Star Wars", "E.T.", "El Señor de los Anillos", "Matrix"], correct: 0 },
+      { question: "¿Cuál es el nombre del director de 'Pulp Fiction' y 'Kill Bill'?", answers: ["Quentin Tarantino", "Martin Scorsese", "Steven Spielberg", "Christopher Nolan"], correct: 0 },
+      { question: "¿Qué banda cantó el famoso tema 'Bohemian Rhapsody'?", answers: ["The Beatles", "Queen", "Led Zeppelin", "The Rolling Stones"], correct: 1 }
+    ];
+
+    // Variables para seguir el progreso del quiz
+    let currentIndex = 0;
+    let score = 0;
+
+    // Referencias
+    const questionEl = document.getElementById("question");
+    const answersEl = document.getElementById("answers");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+
+    // Carga una pregunta en pantalla y genera sus botones
+    function loadQuestion() {
+      resetState(); // Limpiar estado anterior
+      const current = questions[currentIndex]; // Pregunta actual
+      questionEl.textContent = current.question;
+
+      // Generar botones para cada respuesta
+      current.answers.forEach((answer, index) => {
+        const btn = document.createElement("button");
+        btn.textContent = answer;
+        btn.addEventListener("click", () => selectAnswer(index)); // Lógica al hacer clic
+        answersEl.appendChild(btn);
+      });
+    }
+
+    // Limpia el contenedor de respuestas y oculta el botón "Siguiente"
+    function resetState() {
+      answersEl.innerHTML = "";
+      nextBtn.style.display = "none";
+    }
+
+    // Se ejecuta al seleccionar una respuesta
+    function selectAnswer(selected) {
+      const current = questions[currentIndex];
+      const buttons = answersEl.querySelectorAll("button");
+
+      // Aplica clases de estilo según si la respuesta fue correcta o no
+      buttons.forEach((btn, index) => {
+        btn.disabled = true;
+        if (index === current.correct) {
+          btn.classList.add("correct");
+        } else if (index === selected) {
+          btn.classList.add("wrong");
+        }
+      });
+
+      // Sonidos de acierto o fallo
+      const correctSound = document.getElementById("correct-sound");
+      const wrongSound = document.getElementById("wrong-sound");
+
+      if (selected === current.correct) {
+        correctSound.play();
+        score++; // Suma un punto si acierta
+      } else {
+        wrongSound.play();
+      }
+
+      nextBtn.style.display = "inline-block"; // Mostrar botón "Siguiente"
+    }
+
+    // Manejador del botón "Siguiente"
+    nextBtn.addEventListener("click", () => {
+      currentIndex++;
+      if (currentIndex < questions.length) {
+        loadQuestion();
+      } else {
+        showFinalScore(); // Si no hay más preguntas, mostrar resultados
+      }
+    });
+
+    // Muestra el resultado final al usuario
+    function showFinalScore() {
+      questionEl.textContent = "¡Has terminado el quiz!";
+      answersEl.innerHTML = "";
+      nextBtn.style.display = "none";
+      scoreEl.textContent = `Esta es tu puntuación final: ${score} de ${questions.length}`;
+    }
+
+    loadQuestion();
+  </script>
+</body>
+
+</html>

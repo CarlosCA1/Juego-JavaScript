@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Geografía</title>
+  <style>
+    /* Box-sizing global para mejor control de los elementos */
+    * {
+      box-sizing: border-box;
+    }
+
+    /* Estilo general del body */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+        url('Images/imagenGeografia.jpg') center/cover no-repeat fixed;
+    }
+
+    /* Contenedor principal del quiz */
+    .quiz-container {
+      background-color: rgba(255, 255, 255);
+      border-radius: 16px;
+      padding: 40px 30px;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Título principal */
+    h1 {
+      margin-bottom: 30px;
+      color: black;
+      font-size: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: black;
+    }
+
+    #answers {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* Estilo para botones */
+    button {
+      padding: 12px 18px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      transform: scale(1.02);
+    }
+
+    /* Botón para pasar a la siguiente pregunta */
+    #next-btn {
+      background-color: blue;
+      color: white;
+      margin-top: 20px;
+    }
+
+    #next-btn:hover {
+      background-color: #357ab8;
+    }
+
+    /* Estilos para respuestas correctas o incorrectas */
+    .correct {
+      background-color: green;
+      color: white;
+    }
+
+    .wrong {
+      background-color: red;
+      color: white;
+    }
+
+    /* Estilo de la puntuación final */
+    #score {
+      font-weight: bold;
+      font-size: 18px;
+      color: black;
+      margin-top: 25px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Contenedor del quiz -->
+  <div class="quiz-container">
+    <h1>Geografía</h1>
+    <div id="question-container">
+      <p id="question"></p> <!-- Pregunta -->
+      <div id="answers"></div> <!-- Contenedor de respuestas -->
+      <button id="next-btn" style="display:none;">Siguiente</button>
+    </div>
+    <p id="score"></p> <!-- Texto de puntuación final -->
+
+    <!-- Música de fondo -->
+    <audio autoplay loop hidden>
+      <source src="Sounds/musicaFondo.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Sonidos de acierto o fallo -->
+    <audio id="correct-sound" src="sounds/correcto.mp3"></audio>
+    <audio id="wrong-sound" src="sounds/incorrecto.mp3"></audio>
+  </div>
+
+  <script>
+    // Lista de preguntas, cada una con su texto, opciones y respuesta correcta (índice)
+    const questions = [
+      { question: "¿Cuál es el río más largo del mundo?", answers: ["Nilo", "Amazonas", "Yangtsé", "Misisipi"], correct: 1 },
+      { question: "¿Qué país tiene la mayor cantidad de habitantes?", answers: ["India", "EE.UU.", "China", "Indonesia"], correct: 2 },
+      { question: "¿Cuál es la capital de Australia?", answers: ["Sídney", "Melbourne", "Canberra", "Brisbane"], correct: 2 },
+      { question: "¿En qué continente se encuentra Egipto?", answers: ["Asia", "África", "Europa", "América"], correct: 1 },
+      { question: "¿Qué océano es el más grande?", answers: ["Atlántico", "Índico", "Ártico", "Pacífico"], correct: 3 },
+      { question: "¿Cuál es el desierto más grande del mundo?", answers: ["Sahara", "Gobi", "Antártida", "Kalahari"], correct: 2 },
+      { question: "¿Qué país tiene forma de bota?", answers: ["Grecia", "Italia", "España", "México"], correct: 1 },
+      { question: "¿Cuál es la capital de Canadá?", answers: ["Toronto", "Montreal", "Vancouver", "Ottawa"], correct: 3 },
+      { question: "¿Cuál es la montaña más alta del mundo?", answers: ["K2", "Makalu", "Everest", "Kangchenjunga"], correct: 2 },
+      { question: "¿Qué continente tiene más países?", answers: ["África", "Asia", "Europa", "América"], correct: 0 },
+      { question: "¿Qué país tiene el mayor territorio del mundo?", answers: ["Canadá", "Rusia", "China", "Estados Unidos"], correct: 1 },
+      { question: "¿En qué continente se encuentra el Amazonas?", answers: ["Asia", "África", "América del Sur", "Oceanía"], correct: 2 },
+      { question: "¿Cuál es la capital de Japón?", answers: ["Seúl", "Pekín", "Tokio", "Bangkok"], correct: 2 },
+      { question: "¿Qué desierto es el más cálido del mundo?", answers: ["Sahara", "Atacama", "Gobi", "Kalahari"], correct: 0 },
+      { question: "¿En qué océano se encuentra la isla de Hawái?", answers: ["Atlántico", "Índico", "Pacífico", "Ártico"], correct: 2 },
+      { question: "¿Cuál es el país más pequeño del mundo?", answers: ["San Marino", "Mónaco", "Ciudad del Vaticano", "Liechtenstein"], correct: 2 },
+      { question: "¿Qué cordillera se extiende por América del Sur?", answers: ["Los Andes", "Los Pirineos", "Las Rocosas", "Los Alpes"], correct: 0 },
+      { question: "¿Cuál es el país más grande de África?", answers: ["Nigeria", "Sudáfrica", "Egipto", "Argelia"], correct: 3 },
+      { question: "¿Qué río pasa por la ciudad de Londres?", answers: ["Río Támesis", "Río Sena", "Río Rin", "Río Danubio"], correct: 0 },
+      { question: "¿Cuál es el continente con menos países?", answers: ["Antártida", "Oceanía", "Europa", "Asia"], correct: 0 }
+    ];
+
+    // Variables para seguir el progreso del quiz
+    let currentIndex = 0;
+    let score = 0;
+
+    // Referencias
+    const questionEl = document.getElementById("question");
+    const answersEl = document.getElementById("answers");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+
+    // Carga una pregunta en pantalla y genera sus botones
+    function loadQuestion() {
+      resetState(); // Limpiar estado anterior
+      const current = questions[currentIndex]; // Pregunta actual
+      questionEl.textContent = current.question;
+
+      // Generar botones para cada respuesta
+      current.answers.forEach((answer, index) => {
+        const btn = document.createElement("button");
+        btn.textContent = answer;
+        btn.addEventListener("click", () => selectAnswer(index)); // Lógica al hacer clic
+        answersEl.appendChild(btn);
+      });
+    }
+
+    // Limpia el contenedor de respuestas y oculta el botón "Siguiente"
+    function resetState() {
+      answersEl.innerHTML = "";
+      nextBtn.style.display = "none";
+    }
+
+    // Se ejecuta al seleccionar una respuesta
+    function selectAnswer(selected) {
+      const current = questions[currentIndex];
+      const buttons = answersEl.querySelectorAll("button");
+
+      // Aplica clases de estilo según si la respuesta fue correcta o no
+      buttons.forEach((btn, index) => {
+        btn.disabled = true;
+        if (index === current.correct) {
+          btn.classList.add("correct");
+        } else if (index === selected) {
+          btn.classList.add("wrong");
+        }
+      });
+
+      // Sonidos de acierto o fallo
+      const correctSound = document.getElementById("correct-sound");
+      const wrongSound = document.getElementById("wrong-sound");
+
+      if (selected === current.correct) {
+        correctSound.play();
+        score++; // Suma un punto si acierta
+      } else {
+        wrongSound.play();
+      }
+
+      nextBtn.style.display = "inline-block"; // Mostrar botón "Siguiente"
+    }
+
+    // Manejador del botón "Siguiente"
+    nextBtn.addEventListener("click", () => {
+      currentIndex++;
+      if (currentIndex < questions.length) {
+        loadQuestion();
+      } else {
+        showFinalScore(); // Si no hay más preguntas, mostrar resultados
+      }
+    });
+
+    // Muestra el resultado final al usuario
+    function showFinalScore() {
+      questionEl.textContent = "¡Has terminado el quiz!";
+      answersEl.innerHTML = "";
+      nextBtn.style.display = "none";
+      scoreEl.textContent = `Esta es tu puntuación final: ${score} de ${questions.length}`;
+    }
+
+    loadQuestion();
+  </script>
+</body>
+
+</html>

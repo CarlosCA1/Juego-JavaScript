@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Historia</title>
+  <style>
+    /* Box-sizing global para mejor control de los elementos */
+    * {
+      box-sizing: border-box;
+    }
+
+    /* Estilo general del body */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+              url('Images/imagenHistoria.jpg') center/cover no-repeat fixed;
+    }
+
+    /* Contenedor principal del quiz */
+    .quiz-container {
+      background-color: rgba(255, 255, 255);
+      border-radius: 16px;
+      padding: 40px 30px;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Título principal */
+    h1 {
+      margin-bottom: 30px;
+      color: black;
+      font-size: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: black;
+    }
+
+    #answers {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* Estilo para botones */
+    button {
+      padding: 12px 18px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      transform: scale(1.02);
+    }
+
+    /* Botón para pasar a la siguiente pregunta */
+    #next-btn {
+      background-color: blue;
+      color: white;
+      margin-top: 20px;
+    }
+
+    #next-btn:hover {
+      background-color: #357ab8;
+    }
+
+    /* Estilos para respuestas correctas o incorrectas */
+    .correct {
+      background-color: green;
+      color: white;
+    }
+
+    .wrong {
+      background-color: red;
+      color: white;
+    }
+
+    /* Estilo de la puntuación final */
+    #score {
+      font-weight: bold;
+      font-size: 18px;
+      color: black;
+      margin-top: 25px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Contenedor del quiz -->
+  <div class="quiz-container">
+    <h1>Historia</h1>
+    <div id="question-container">
+      <p id="question"></p> <!-- Pregunta -->
+      <div id="answers"></div> <!-- Contenedor de respuestas -->
+      <button id="next-btn" style="display:none;">Siguiente</button>
+    </div>
+    <p id="score"></p> <!-- Texto de puntuación final -->
+
+    <!-- Música de fondo -->
+    <audio autoplay loop hidden>
+      <source src="Sounds/musicaFondo.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Sonidos de acierto o fallo -->
+    <audio id="correct-sound" src="sounds/correcto.mp3"></audio>
+    <audio id="wrong-sound" src="sounds/incorrecto.mp3"></audio>
+  </div>
+
+  <script>
+    // Lista de preguntas, cada una con su texto, opciones y respuesta correcta (índice)
+    const questions = [
+      { question: "¿Quién fue el primer presidente de los Estados Unidos?", answers: ["George Washington", "Abraham Lincoln", "Thomas Jefferson", "John Adams"], correct: 0 },
+      { question: "¿En qué año comenzó la Revolución Francesa?", answers: ["1789", "1776", "1804", "1815"], correct: 0 },
+      { question: "¿Qué imperio construyó la Gran Muralla?", answers: ["Imperio Romano", "Imperio Mongol", "Imperio Chino", "Imperio Persa"], correct: 2 },
+      { question: "¿Qué evento marcó el final de la Segunda Guerra Mundial?", answers: ["La caída del Muro de Berlín", "La rendición de Japón", "La conferencia de Yalta", "La firma del Tratado de Versalles"], correct: 1 },
+      { question: "¿Quién fue el líder de la Revolución Cubana?", answers: ["Che Guevara", "Fidel Castro", "Simón Bolívar", "Augusto Pinochet"], correct: 1 },
+      { question: "¿Qué imperio fue derrotado en la Batalla de Waterloo?", answers: ["Imperio Británico", "Imperio Francés", "Imperio Prusiano", "Imperio Ruso"], correct: 1 },
+      { question: "¿Quién descubrió América en 1492?", answers: ["Cristóbal Colón", "Fernando Magallanes", "Marco Polo", "Vasco da Gama"], correct: 0 },
+      { question: "¿Qué guerra tuvo lugar entre 1914 y 1918?", answers: ["Guerra Civil Española", "Primera Guerra Mundial", "Segunda Guerra Mundial", "Guerra de Vietnam"], correct: 1 },
+      { question: "¿Qué imperio existió entre 27 a.C. y 476 d.C.?", answers: ["Imperio Romano", "Imperio Bizantino", "Imperio Otomano", "Imperio Persa"], correct: 0 },
+      { question: "¿Qué país fue invadido por Napoleón Bonaparte en 1812?", answers: ["España", "Alemania", "Rusia", "Italia"], correct: 2 },
+      { question: "¿En qué año cayó el Muro de Berlín?", answers: ["1989", "1991", "1979", "1961"], correct: 0 },
+      { question: "¿Quién fue el líder del Tercer Reich?", answers: ["Joseph Stalin", "Adolf Hitler", "Benito Mussolini", "Francisco Franco"], correct: 1 },
+      { question: "¿Qué continente sufrió la colonización europea durante el siglo XIX?", answers: ["Asia", "América", "África", "Oceanía"], correct: 2 },
+      { question: "¿En qué año terminó la Primera Guerra Mundial?", answers: ["1914", "1918", "1920", "1939"], correct: 1 },
+      { question: "¿Qué imperio fue conocido por su cultura helenística?", answers: ["Imperio Romano", "Imperio Persa", "Imperio Macedonio", "Imperio Egipcio"], correct: 2 },
+      { question: "¿Qué famoso líder fue asesinado en 1963 en Estados Unidos?", answers: ["Lyndon B. Johnson", "John F. Kennedy", "Richard Nixon", "George H. W. Bush"], correct: 1 },
+      { question: "¿En qué batalla se derrotó al ejército napoleónico?", answers: ["Batalla de Waterloo", "Batalla de Austerlitz", "Batalla de Leipzig", "Batalla de Trafalgar"], correct: 0 },
+      { question: "¿Qué imperio estaba basado en la actual Turquía?", answers: ["Imperio Otomano", "Imperio Bizantino", "Imperio Romano", "Imperio Persa"], correct: 0 },
+      { question: "¿Qué guerra ocurrió entre 1939 y 1945?", answers: ["Guerra de Vietnam", "Segunda Guerra Mundial", "Guerra Civil Española", "Guerra de Corea"], correct: 1 },
+      { question: "¿Qué famoso explorador descubrió el continente americano en 1492?", answers: ["Cristóbal Colón", "Marco Polo", "Ferdinand Magellan", "Hernán Cortés"], correct: 0 }
+    ];
+
+    // Variables para seguir el progreso del quiz
+    let currentIndex = 0;
+    let score = 0;
+
+    // Referencias
+    const questionEl = document.getElementById("question");
+    const answersEl = document.getElementById("answers");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+
+    // Carga una pregunta en pantalla y genera sus botones
+    function loadQuestion() {
+      resetState(); // Limpiar estado anterior
+      const current = questions[currentIndex]; // Pregunta actual
+      questionEl.textContent = current.question;
+
+      // Generar botones para cada respuesta
+      current.answers.forEach((answer, index) => {
+        const btn = document.createElement("button");
+        btn.textContent = answer;
+        btn.addEventListener("click", () => selectAnswer(index)); // Lógica al hacer clic
+        answersEl.appendChild(btn);
+      });
+    }
+
+    // Limpia el contenedor de respuestas y oculta el botón "Siguiente"
+    function resetState() {
+      answersEl.innerHTML = "";
+      nextBtn.style.display = "none";
+    }
+
+    // Se ejecuta al seleccionar una respuesta
+    function selectAnswer(selected) {
+      const current = questions[currentIndex];
+      const buttons = answersEl.querySelectorAll("button");
+
+      // Aplica clases de estilo según si la respuesta fue correcta o no
+      buttons.forEach((btn, index) => {
+        btn.disabled = true;
+        if (index === current.correct) {
+          btn.classList.add("correct");
+        } else if (index === selected) {
+          btn.classList.add("wrong");
+        }
+      });
+
+      // Sonidos de acierto o fallo
+      const correctSound = document.getElementById("correct-sound");
+      const wrongSound = document.getElementById("wrong-sound");
+
+      if (selected === current.correct) {
+        correctSound.play();
+        score++; // Suma un punto si acierta
+      } else {
+        wrongSound.play();
+      }
+
+      nextBtn.style.display = "inline-block"; // Mostrar botón "Siguiente"
+    }
+
+    // Manejador del botón "Siguiente"
+    nextBtn.addEventListener("click", () => {
+      currentIndex++;
+      if (currentIndex < questions.length) {
+        loadQuestion();
+      } else {
+        showFinalScore(); // Si no hay más preguntas, mostrar resultados
+      }
+    });
+
+    // Muestra el resultado final al usuario
+    function showFinalScore() {
+      questionEl.textContent = "¡Has terminado el quiz!";
+      answersEl.innerHTML = "";
+      nextBtn.style.display = "none";
+      scoreEl.textContent = `Esta es tu puntuación final: ${score} de ${questions.length}`;
+    }
+
+    loadQuestion();
+  </script>
+</body>
+
+</html>

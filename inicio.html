@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Página Principal - Juego de Preguntas</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: url('fondo.jpg') no-repeat center center/cover;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      text-align: center;
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 60px; /* Aumentamos el padding para hacerlo más grande */
+      border-radius: 16px;
+      color: white;
+      width: 90%;
+      max-width: 600px; /* Aumentamos el max-width para hacerlo más grande */
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    }
+
+    h1 {
+      margin-bottom: 30px;
+      font-size: 2.5rem; /* Aumentamos el tamaño de la fuente */
+    }
+
+    input[type="text"] {
+      padding: 12px;
+      width: 100%;
+      font-size: 1.2rem; /* Aumentamos el tamaño de la fuente */
+      border-radius: 6px;
+      border: none;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .btn-iniciar {
+      text-decoration: none;
+      background-color: orange;
+      color: white;
+      padding: 14px 30px; /* Aumentamos el padding del botón */
+      font-size: 1.2rem; /* Aumentamos el tamaño de la fuente del botón */
+      border-radius: 8px;
+      display: inline-block;
+      transition: background-color 0.3s, transform 0.2s;
+      cursor: pointer;
+    }
+
+    .btn-iniciar:hover {
+      background-color: #0055ff;
+      transform: scale(1.05);
+    }
+
+    audio {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <main class="container">
+    <h1>¡Bienvenido a <span style="color: orange;">Sabiond@s</span>!</h1>
+    <input type="text" id="nombreJugador" placeholder="Ingresa tu nombre" aria-label="Nombre del jugador" />
+    <br />
+    <a href="#" onclick="iniciarJuego()" class="btn-iniciar">Iniciar Juego</a>
+  </main>
+
+  <audio autoplay loop>
+    <source src="Sounds/musicaFondo.mp3" type="audio/mpeg" />
+  </audio>
+
+  <script>
+    function iniciarJuego() {
+      const nombre = document.getElementById('nombreJugador').value;
+      if(nombre.trim() === "") {
+        alert("Por favor, ingresa tu nombre.");
+        return;
+      }
+      localStorage.setItem("nombreJugador", nombre);  // Guardamos el nombre
+      window.location.href = "menu.html"; // Redirige al menú de categorías
+    }
+  </script>
+
+</body>
+</html>
+

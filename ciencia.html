@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ciencia</title>
+  <style>
+   /* Box-sizing global para mejor control de los elementos */
+   * {
+      box-sizing: border-box;
+    }
+
+    /* Estilo general del body */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+              url('Images/imagenCiencia.jpg') center/cover no-repeat fixed;
+    }
+
+    /* Contenedor principal del quiz */
+    .quiz-container {
+      background-color: rgba(255, 255, 255);
+      border-radius: 16px;
+      padding: 40px 30px;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Título principal */
+    h1 {
+      margin-bottom: 30px;
+      color: black;
+      font-size: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: black;
+    }
+
+    #answers {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* Estilo para botones */
+    button {
+      padding: 12px 18px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      transform: scale(1.02);
+    }
+
+    /* Botón para pasar a la siguiente pregunta */
+    #next-btn {
+      background-color: blue;
+      color: white;
+      margin-top: 20px;
+    }
+
+    #next-btn:hover {
+      background-color: #357ab8;
+    }
+
+    /* Estilos para respuestas correctas o incorrectas */
+    .correct {
+      background-color: green;
+      color: white;
+    }
+
+    .wrong {
+      background-color: red;
+      color: white;
+    }
+
+    /* Estilo de la puntuación final */
+    #score {
+      font-weight: bold;
+      font-size: 18px;
+      color: black;
+      margin-top: 25px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Contenedor del quiz -->
+  <div class="quiz-container">
+    <h1>Ciencia</h1>
+    <div id="question-container">
+      <p id="question"></p> <!-- Pregunta -->
+      <div id="answers"></div> <!-- Contenedor de respuestas -->
+      <button id="next-btn" style="display:none;">Siguiente</button>
+    </div>
+    <p id="score"></p> <!-- Texto de puntuación final -->
+
+    <!-- Música de fondo -->
+    <audio autoplay loop hidden>
+      <source src="Sounds/musicaFondo.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Sonidos de acierto o fallo -->
+    <audio id="correct-sound" src="sounds/correcto.mp3"></audio>
+    <audio id="wrong-sound" src="sounds/incorrecto.mp3"></audio>
+  </div>
+
+  <script>
+    // Lista de preguntas, cada una con su texto, opciones y respuesta correcta (índice)
+    const questions = [
+      {
+        question: "¿Cuál es el planeta más grande del sistema solar?",
+        answers: ["Tierra", "Saturno", "Júpiter", "Urano"],
+        correct: 2
+      },
+      {
+        question: "¿Quién propuso la teoría de la relatividad?",
+        answers: ["Isaac Newton", "Nikola Tesla", "Albert Einstein", "Galileo Galilei"],
+        correct: 2
+      },
+      {
+        question: "¿Qué elemento tiene el símbolo 'O' en la tabla periódica?",
+        answers: ["Oro", "Oxígeno", "Osmio", "Oganesón"],
+        correct: 1
+      },
+      {
+        question: "¿Cuántos continentes existen en el mundo?",
+        answers: ["5", "6", "7", "8"],
+        correct: 2
+      },
+      {
+        question: "¿Qué órgano humano produce insulina?",
+        answers: ["Hígado", "Corazón", "Páncreas", "Riñones"],
+        correct: 2
+      },
+      {
+        question: "¿Qué científico formuló las leyes del movimiento?",
+        answers: ["Isaac Newton", "Albert Einstein", "Max Planck", "Niels Bohr"],
+        correct: 0
+      },
+      {
+        question: "¿En qué parte del cuerpo humano se encuentra el fémur?",
+        answers: ["Brazo", "Pierna", "Cabeza", "Espalda"],
+        correct: 1
+      },
+      {
+        question: "¿Cuál es el gas más abundante en la atmósfera terrestre?",
+        answers: ["Oxígeno", "Hidrógeno", "Nitrógeno", "Dióxido de carbono"],
+        correct: 2
+      },
+      {
+        question: "¿Qué fenómeno causa las estaciones del año?",
+        answers: ["La rotación de la Tierra", "La inclinación del eje terrestre", "La órbita de la Tierra", "La velocidad de la Tierra"],
+        correct: 1
+      },
+      {
+        question: "¿Cuál es el número atómico del carbono?",
+        answers: ["6", "12", "14", "8"],
+        correct: 0
+      },
+      {
+        question: "¿Qué tipo de energía se obtiene de los alimentos?",
+        answers: ["Energía térmica", "Energía cinética", "Energía química", "Energía nuclear"],
+        correct: 2
+      },
+      {
+        question: "¿Quién es conocido como el padre de la genética?",
+        answers: ["Charles Darwin", "Gregor Mendel", "Louis Pasteur", "Albert Einstein"],
+        correct: 1
+      },
+      {
+        question: "¿Qué órgano humano es responsable de bombear la sangre?",
+        answers: ["Estómago", "Corazón", "Pulmones", "Riñones"],
+        correct: 1
+      },
+      {
+        question: "¿Qué gas es necesario para la fotosíntesis?",
+        answers: ["Oxígeno", "Nitrógeno", "Dióxido de carbono", "Metano"],
+        correct: 2
+      },
+      {
+        question: "¿Cuál es el átomo más ligero de la tabla periódica?",
+        answers: ["Hidrógeno", "Helio", "Litio", "Boro"],
+        correct: 0
+      },
+      {
+        question: "¿Quién descubrió la penicilina?",
+        answers: ["Alexander Fleming", "Marie Curie", "Louis Pasteur", "Albert Einstein"],
+        correct: 0
+      },
+      {
+        question: "¿Qué es la gravedad?",
+        answers: ["Una fuerza que repela objetos", "Una fuerza que atrae objetos hacia el centro de la Tierra", "Una onda electromagnética", "Una propiedad de los gases"],
+        correct: 1
+      },
+      {
+        question: "¿Cuál es la unidad de medida de la corriente eléctrica?",
+        answers: ["Voltio", "Ohm", "Amperio", "Julio"],
+        correct: 2
+      },
+      {
+        question: "¿Qué tipo de animal es un delfín?",
+        answers: ["Reptil", "Mamífero", "Pájaro", "Pez"],
+        correct: 1
+      },
+      {
+        question: "¿Cuántos cromosomas tiene un ser humano?",
+        answers: ["46", "48", "44", "42"],
+        correct: 0
+      }
+    ];
+
+    // Variables para seguir el progreso del quiz
+    let currentIndex = 0;
+    let score = 0;
+
+    // Referencias
+    const questionEl = document.getElementById("question");
+    const answersEl = document.getElementById("answers");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+
+    // Carga una pregunta en pantalla y genera sus botones
+    function loadQuestion() {
+      resetState(); // Limpiar estado anterior
+      const current = questions[currentIndex]; // Pregunta actual
+      questionEl.textContent = current.question;
+
+      // Generar botones para cada respuesta
+      current.answers.forEach((answer, index) => {
+        const btn = document.createElement("button");
+        btn.textContent = answer;
+        btn.addEventListener("click", () => selectAnswer(index)); // Lógica al hacer clic
+        answersEl.appendChild(btn);
+      });
+    }
+
+    // Limpia el contenedor de respuestas y oculta el botón "Siguiente"
+    function resetState() {
+      answersEl.innerHTML = "";
+      nextBtn.style.display = "none";
+    }
+
+    // Se ejecuta al seleccionar una respuesta
+    function selectAnswer(selected) {
+      const current = questions[currentIndex];
+      const buttons = answersEl.querySelectorAll("button");
+
+      // Aplica clases de estilo según si la respuesta fue correcta o no
+      buttons.forEach((btn, index) => {
+        btn.disabled = true;
+        if (index === current.correct) {
+          btn.classList.add("correct");
+        } else if (index === selected) {
+          btn.classList.add("wrong");
+        }
+      });
+
+      // Sonidos de acierto o fallo
+      const correctSound = document.getElementById("correct-sound");
+      const wrongSound = document.getElementById("wrong-sound");
+
+      if (selected === current.correct) {
+        correctSound.play();
+        score++; // Suma un punto si acierta
+      } else {
+        wrongSound.play();
+      }
+
+      nextBtn.style.display = "inline-block"; // Mostrar botón "Siguiente"
+    }
+
+    // Manejador del botón "Siguiente"
+    nextBtn.addEventListener("click", () => {
+      currentIndex++;
+      if (currentIndex < questions.length) {
+        loadQuestion();
+      } else {
+        showFinalScore(); // Si no hay más preguntas, mostrar resultados
+      }
+    });
+
+    // Muestra el resultado final al usuario
+    function showFinalScore() {
+      questionEl.textContent = "¡Has terminado el quiz!";
+      answersEl.innerHTML = "";
+      nextBtn.style.display = "none";
+      scoreEl.textContent = `Esta es tu puntuación final: ${score} de ${questions.length}`;
+    }
+
+    loadQuestion();
+  </script>
+</body>
+
+</html>

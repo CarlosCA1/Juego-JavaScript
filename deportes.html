@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deportes</title>
+  <style>
+    /* Box-sizing global para mejor control de los elementos */
+    * {
+      box-sizing: border-box;
+    }
+
+    /* Estilo general del body */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+              url('Images/imagenDeportes.jpg') center/cover no-repeat fixed;
+    }
+
+    /* Contenedor principal del quiz */
+    .quiz-container {
+      background-color: rgba(255, 255, 255);
+      border-radius: 16px;
+      padding: 40px 30px;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Título principal */
+    h1 {
+      margin-bottom: 30px;
+      color: black;
+      font-size: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: black;
+    }
+
+    #answers {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* Estilo para botones */
+    button {
+      padding: 12px 18px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      transform: scale(1.02);
+    }
+
+    /* Botón para pasar a la siguiente pregunta */
+    #next-btn {
+      background-color: blue;
+      color: white;
+      margin-top: 20px;
+    }
+
+    #next-btn:hover {
+      background-color: #357ab8;
+    }
+
+    /* Estilos para respuestas correctas o incorrectas */
+    .correct {
+      background-color: green;
+      color: white;
+    }
+
+    .wrong {
+      background-color: red;
+      color: white;
+    }
+
+    /* Estilo de la puntuación final */
+    #score {
+      font-weight: bold;
+      font-size: 18px;
+      color: black;
+      margin-top: 25px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Contenedor del quiz -->
+  <div class="quiz-container">
+    <h1>Deportes</h1>
+    <div id="question-container">
+      <p id="question"></p> <!-- Pregunta -->
+      <div id="answers"></div> <!-- Contenedor de respuestas -->
+      <button id="next-btn" style="display:none;">Siguiente</button>
+    </div>
+    <p id="score"></p> <!-- Texto de puntuación final -->
+
+    <!-- Música de fondo -->
+    <audio autoplay loop hidden>
+      <source src="Sounds/musicaFondo.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Sonidos de acierto o fallo -->
+    <audio id="correct-sound" src="sounds/correcto.mp3"></audio>
+    <audio id="wrong-sound" src="sounds/incorrecto.mp3"></audio>   
+  </div>
+
+  <script>
+    // Lista de preguntas, cada una con su texto, opciones y respuesta correcta (índice)
+    const questions = [
+      {
+        question: "¿Quién fue el primer no europeo en ganar el Balón de Oro?",
+        answers: ["Ronaldo Nazário", "Maradona", "George Weah", "Rivaldo"],
+        correct: 2
+      },
+      {
+        question: "¿Quién es el tenista con más Grand Slams?",
+        answers: ["Novak Djokovic", "Pete Sampras", "Roger Federer", "Rafa Nadal"],
+        correct: 0
+      },
+      {
+        question: "¿Quién ganó la Premier League en la temporada 2016-2017?",
+        answers: ["Manchester United", "Manchester City", "Chelsea", "Liverpool"],
+        correct: 2
+      },
+      {
+        question: "¿Qué selección ganó el Mundial de Fútbol en 1978?",
+        answers: ["Brasil", "Alemania", "Italia", "Argentina"],
+        correct: 3
+      },
+      {
+        question: "¿Cuántos jugadores hay en un equipo de baloncesto en cancha?",
+        answers: ["4", "5", "6", "7"],
+        correct: 1
+      },
+      {
+        question: "¿En qué deporte se usa una raqueta y una pelota amarilla?",
+        answers: ["Bádminton", "Squash", "Tenis", "Ping pong"],
+        correct: 2
+      },
+      {
+        question: "¿Cuántos anillos hay en el símbolo olímpico?",
+        answers: ["4", "5", "6", "7"],
+        correct: 1
+      },
+      {
+        question: "¿Qué país ha ganado más Copas del Mundo de fútbol?",
+        answers: ["Alemania", "Brasil", "Italia", "Francia"],
+        correct: 1
+      },
+      {
+        question: "¿En qué año fueron los primeros Juegos Olímpicos modernos?",
+        answers: ["1896", "1900", "1888", "1912"],
+        correct: 0
+      },
+      {
+        question: "¿Qué futbolista argentino es apodado 'La Pulga'?",
+        answers: ["Diego Maradona", "Sergio Agüero", "Ángel Di María", "Lionel Messi"],
+        correct: 3
+      },
+      {
+        question: "¿Quién tiene el récord de más goles en una Copa del Mundo?",
+        answers: ["Ronaldo Nazário", "Miroslav Klose", "Pelé", "Lionel Messi"],
+        correct: 1
+      },
+      {
+        question: "¿En qué deporte se practica el slam dunk?",
+        answers: ["Baloncesto", "Fútbol", "Voleibol", "Hockey sobre hielo"],
+        correct: 0
+      },
+      {
+        question: "¿Qué país es famoso por el rugby y ha ganado la Copa del Mundo varias veces?",
+        answers: ["Australia", "Sudáfrica", "Nueva Zelanda", "Inglaterra"],
+        correct: 2
+      },
+      {
+        question: "¿Qué atleta tiene el récord mundial de 100 metros?",
+        answers: ["Usain Bolt", "Michael Johnson", "Carl Lewis", "Tyson Gay"],
+        correct: 0
+      },
+      {
+        question: "¿Qué futbolista es conocido como 'El Fenómeno'?",
+        answers: ["Cristiano Ronaldo", "Ronaldo Nazário", "Zico", "Romário"],
+        correct: 1
+      },
+      {
+        question: "¿En qué año se celebraron los primeros Juegos Olímpicos de Invierno?",
+        answers: ["1924", "1932", "1948", "1960"],
+        correct: 0
+      },
+      {
+        question: "¿En qué país nació el famoso tenista Roger Federer?",
+        answers: ["Suiza", "España", "Argentina", "Italia"],
+        correct: 0
+      },
+      {
+        question: "¿Qué equipo ha ganado más Copas Libertadores?",
+        answers: ["Boca Juniors", "River Plate", "Independiente", "São Paulo"],
+        correct: 2
+      },
+      {
+        question: "¿En qué país se juega el cricket como deporte principal?",
+        answers: ["India", "Australia", "Inglaterra", "Pakistán"],
+        correct: 0
+      },
+      {
+        question: "¿Qué equipo de fútbol español ha ganado más veces la Copa del Rey?",
+        answers: ["Real Madrid", "Atlético de Madrid", "FC Barcelona", "Sevilla FC"],
+        correct: 2
+      }
+    ];
+
+    // Variables para seguir el progreso del quiz
+    let currentIndex = 0;
+    let score = 0;
+
+    // Referencias
+    const questionEl = document.getElementById("question");
+    const answersEl = document.getElementById("answers");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+
+    // Carga una pregunta en pantalla y genera sus botones
+    function loadQuestion() {
+      resetState(); // Limpiar estado anterior
+      const current = questions[currentIndex]; // Pregunta actual
+      questionEl.textContent = current.question;
+
+      // Generar botones para cada respuesta
+      current.answers.forEach((answer, index) => {
+        const btn = document.createElement("button");
+        btn.textContent = answer;
+        btn.addEventListener("click", () => selectAnswer(index)); // Lógica al hacer clic
+        answersEl.appendChild(btn);
+      });
+    }
+
+    // Limpia el contenedor de respuestas y oculta el botón "Siguiente"
+    function resetState() {
+      answersEl.innerHTML = "";
+      nextBtn.style.display = "none";
+    }
+
+    // Se ejecuta al seleccionar una respuesta
+    function selectAnswer(selected) {
+      const current = questions[currentIndex];
+      const buttons = answersEl.querySelectorAll("button");
+
+      // Aplica clases de estilo según si la respuesta fue correcta o no
+      buttons.forEach((btn, index) => {
+        btn.disabled = true;
+        if (index === current.correct) {
+          btn.classList.add("correct");
+        } else if (index === selected) {
+          btn.classList.add("wrong");
+        }
+      });
+
+      // Sonidos de acierto o fallo
+      const correctSound = document.getElementById("correct-sound");
+      const wrongSound = document.getElementById("wrong-sound");
+
+      if (selected === current.correct) {
+        correctSound.play();
+        score++; // Suma un punto si acierta
+      } else {
+        wrongSound.play();
+      }
+
+      nextBtn.style.display = "inline-block"; // Mostrar botón "Siguiente"
+    }
+
+    // Manejador del botón "Siguiente"
+    nextBtn.addEventListener("click", () => {
+      currentIndex++;
+      if (currentIndex < questions.length) {
+        loadQuestion();
+      } else {
+        showFinalScore(); // Si no hay más preguntas, mostrar resultados
+      }
+    });
+
+    // Muestra el resultado final al usuario
+    function showFinalScore() {
+      questionEl.textContent = "¡Has terminado el quiz!";
+      answersEl.innerHTML = "";
+      nextBtn.style.display = "none";
+      scoreEl.textContent = `Esta es tu puntuación final: ${score} de ${questions.length}`;
+    }
+
+    loadQuestion();
+  </script>
+</body>
+</html>

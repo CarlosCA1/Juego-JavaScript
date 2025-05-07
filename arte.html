@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arte</title>
+  <style>
+    /* Box-sizing global para mejor control de los elementos */
+    * {
+      box-sizing: border-box;
+    }
+
+    /* Estilo general del body */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+              url('Images/imagenArte.jpeg') center/cover no-repeat fixed;
+    }
+
+    /* Contenedor principal del quiz */
+    .quiz-container {
+      background-color: rgba(255, 255, 255);
+      border-radius: 16px;
+      padding: 40px 30px;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Título principal */
+    h1 {
+      margin-bottom: 30px;
+      color: black;
+      font-size: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: black;
+    }
+
+    #answers {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* Estilo para botones */
+    button {
+      padding: 12px 18px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      transform: scale(1.02);
+    }
+
+    /* Botón para pasar a la siguiente pregunta */
+    #next-btn {
+      background-color: blue;
+      color: white;
+      margin-top: 20px;
+    }
+
+    #next-btn:hover {
+      background-color: #357ab8;
+    }
+
+    /* Estilos para respuestas correctas o incorrectas */
+    .correct {
+      background-color: green;
+      color: white;
+    }
+
+    .wrong {
+      background-color: red;
+      color: white;
+    }
+
+    /* Estilo de la puntuación final */
+    #score {
+      font-weight: bold;
+      font-size: 18px;
+      color: black;
+      margin-top: 25px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Contenedor del quiz -->
+  <div class="quiz-container">
+    <h1>Arte</h1>
+    <div id="question-container">
+      <p id="question"></p> <!-- Pregunta -->
+      <div id="answers"></div> <!-- Contenedor de respuestas -->
+      <button id="next-btn" style="display:none;">Siguiente</button>
+    </div>
+    <p id="score"></p> <!-- Texto de puntuación final -->
+
+    <!-- Música de fondo -->
+    <audio autoplay loop hidden>
+      <source src="Sounds/musicaFondo.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Sonidos de acierto o fallo -->
+    <audio id="correct-sound" src="sounds/correcto.mp3"></audio>
+    <audio id="wrong-sound" src="sounds/incorrecto.mp3"></audio>
+  </div>
+
+  
+
+  <script>
+    // Lista de preguntas, cada una con su texto, opciones y respuesta correcta (índice)
+    const questions = [
+      { question: "¿De quién es la obra 'Los Girasoles'?", answers: ["Leonardo da Vinci", "Vincent Van Gogh", "Pablo Picasso", "Claude Monet"], correct: 1 },
+      { question: "¿Quién pintó 'Las meninas'?", answers: ["Velázquez", "Picasso", "Salvador Dalí", "Goya"], correct: 0 },
+      { question: "¿A qué movimiento pertenece Pablo Picasso?", answers: ["Impresionismo", "Cubismo", "Romanticismo", "Surrealismo"], correct: 1 },
+      { question: "¿Qué famoso artista cortó parte de su propia oreja?", answers: ["Claude Monet", "Paul Cézanne", "Vincent Van Gogh", "Henri Matisse"], correct: 2 },
+      { question: "¿Quién pintó 'La noche estrellada'?", answers: ["Salvador Dalí", "Vincent Van Gogh", "Paul Gauguin", "Edvard Munch"], correct: 1 },
+      { question: "¿Cuál de estos es un escultor renombrado?", answers: ["Auguste Rodin", "Claude Monet", "Gustav Klimt", "Paul Klee"], correct: 0 },
+      { question: "¿Dónde se encuentra la Mona Lisa?", answers: ["Museo del Prado", "Museo Louvre", "Museo Metropolitano", "Galería Uffizi"], correct: 1 },
+      { question: "¿Quién pintó 'El grito'?", answers: ["Edvard Munch", "Goya", "Caravaggio", "Francisco de Zurbarán"], correct: 0 },
+      { question: "¿Qué corriente artística representa Salvador Dalí?", answers: ["Cubismo", "Surrealismo", "Realismo", "Romanticismo"], correct: 1 },
+      { question: "¿Qué técnica consiste en pintar sobre yeso fresco?", answers: ["Óleo", "Acuarela", "Fresco", "Temple"], correct: 2 },
+      { question: "¿Quién pintó 'La última cena'?", answers: ["Miguel Ángel", "Leonardo da Vinci", "Botticelli", "Rafael"], correct: 1 },
+      { question: "¿Qué pintor es conocido por su serie de 'Nenúfares'?", answers: ["Paul Cézanne", "Claude Monet", "Georges Seurat", "Édouard Manet"], correct: 1 },
+      { question: "¿Qué artista español es famoso por su estilo surrealista?", answers: ["Joan Miró", "Velázquez", "Sorolla", "El Greco"], correct: 0 },
+      { question: "¿Qué edificio diseñó Antoni Gaudí en Barcelona?", answers: ["La Alhambra", "La Sagrada Familia", "El Prado", "El Escorial"], correct: 1 },
+      { question: "¿Cuál es el nombre del museo más famoso de Madrid?", answers: ["Museo del Prado", "Museo Británico", "Museo de Orsay", "Museo Vaticano"], correct: 0 },
+      { question: "¿Quién pintó 'La creación de Adán' en la Capilla Sixtina?", answers: ["Donatello", "Miguel Ángel", "Leonardo da Vinci", "Botticelli"], correct: 1 },
+      { question: "¿Qué movimiento artístico usa puntos de colores para formar imágenes?", answers: ["Cubismo", "Impresionismo", "Surrealismo", "Puntillismo"], correct: 3 },
+      { question: "¿Cuál de estos artistas no es del Renacimiento?", answers: ["Rafael", "Leonardo da Vinci", "Miguel Ángel", "Pablo Picasso"], correct: 3 },
+      { question: "¿Qué representa comúnmente el arte barroco?", answers: ["Sencillez y sobriedad", "Dramatismo y emoción", "Geometría", "Minimalismo"], correct: 1 },
+      { question: "¿Qué pintor español es famoso por sus 'pinturas negras'?", answers: ["Velázquez", "Goya", "Murillo", "Sorolla"], correct: 1 }
+    ];
+
+    // Variables para seguir el progreso del quiz
+    let currentIndex = 0;
+    let score = 0;
+
+    // Referencias
+    const questionEl = document.getElementById("question");
+    const answersEl = document.getElementById("answers");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+
+    // Carga una pregunta en pantalla y genera sus botones
+    function loadQuestion() {
+      resetState(); // Limpiar estado anterior
+      const current = questions[currentIndex]; // Pregunta actual
+      questionEl.textContent = current.question;
+
+      // Generar botones para cada respuesta
+      current.answers.forEach((answer, index) => {
+        const btn = document.createElement("button");
+        btn.textContent = answer;
+        btn.addEventListener("click", () => selectAnswer(index)); // Lógica al hacer clic
+        answersEl.appendChild(btn);
+      });
+    }
+
+    // Limpia el contenedor de respuestas y oculta el botón "Siguiente"
+    function resetState() {
+      answersEl.innerHTML = "";
+      nextBtn.style.display = "none";
+    }
+
+    // Se ejecuta al seleccionar una respuesta
+    function selectAnswer(selected) {
+      const current = questions[currentIndex];
+      const buttons = answersEl.querySelectorAll("button");
+
+      // Aplica clases de estilo según si la respuesta fue correcta o no
+      buttons.forEach((btn, index) => {
+        btn.disabled = true;
+        if (index === current.correct) {
+          btn.classList.add("correct");
+        } else if (index === selected) {
+          btn.classList.add("wrong");
+        }
+      });
+
+      // Sonidos de acierto o fallo
+      const correctSound = document.getElementById("correct-sound");
+      const wrongSound = document.getElementById("wrong-sound");
+
+      if (selected === current.correct) {
+        correctSound.play();
+        score++; // Suma un punto si acierta
+      } else {
+        wrongSound.play();
+      }
+
+      nextBtn.style.display = "inline-block"; // Mostrar botón "Siguiente"
+    }
+
+    // Manejador del botón "Siguiente"
+    nextBtn.addEventListener("click", () => {
+      currentIndex++;
+      if (currentIndex < questions.length) {
+        loadQuestion();
+      } else {
+        showFinalScore(); // Si no hay más preguntas, mostrar resultados
+      }
+    });
+
+    // Muestra el resultado final al usuario
+    function showFinalScore() {
+      questionEl.textContent = "¡Has terminado el quiz!";
+      answersEl.innerHTML = "";
+      nextBtn.style.display = "none";
+      scoreEl.textContent = `Esta es tu puntuación final: ${score} de ${questions.length}`;
+    }
+
+    loadQuestion();
+  </script>
+</body>
+
+</html>
