@@ -114,6 +114,11 @@
     </div>
   </div>
 
+  <audio autoplay loop>
+    <source src="Sounds/musicaFondo.mp3" type="audio/mpeg" />
+  </audio>
+
+
   <script>
  const nombreJugador = localStorage.getItem("nombreJugador");  // Recupera el nombre del jugador almacenado en el almacenamiento local (localStorage)
 if (nombreJugador) {  // Si el nombre del jugador existe en localStorage
@@ -124,19 +129,6 @@ if (nombreJugador) {  // Si el nombre del jugador existe en localStorage
 function entrarCategoria(categoria) {
   window.location.href = categoria + ".html";  // Redirige al jugador a una nueva página según la categoría seleccionada (se genera la URL en base al nombre de la categoría)
 }
-
-function toggleAudio() {
-  const audio = document.getElementById("musica");  // Obtiene el elemento de audio con id 'musica'
-  const btn = document.querySelector(".musica button");  // Obtiene el botón de música dentro de la clase 'musica'
-  if (audio.paused) {  // Si el audio está pausado
-    audio.play();  // Reproduce el audio
-    btn.textContent = "🔊";  // Cambia el texto del botón a '🔊' para indicar que el sonido está activado
-  } else {  // Si el audio está siendo reproducido
-    audio.pause();  // Pausa el audio
-    btn.textContent = "🔇";  // Cambia el texto del botón a '🔇' para indicar que el sonido está desactivado
-  }
-}
-
   </script>
 </body>
 </html>
